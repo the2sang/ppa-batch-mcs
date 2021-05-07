@@ -3,7 +3,7 @@
     "blueprints": [],
     "otherModules": [],
     "applicationType": "microservice",
-    "baseName": "PPAWebBatch",
+    "baseName": "ppa-batch-mcs",
     "jhipsterVersion": "7.0.1",
     "skipClient": true,
     "skipUserManagement": true,
