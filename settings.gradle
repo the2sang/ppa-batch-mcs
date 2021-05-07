@@ -15,4 +15,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = "ppa-web-batch"
+rootProject.name = "ppa-batch-mcs"

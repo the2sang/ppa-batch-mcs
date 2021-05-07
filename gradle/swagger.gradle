@@ -13,7 +13,7 @@ openApiGenerate {
     apiFilesConstrainedTo = [""]
     modelFilesConstrainedTo = [""]
     supportingFilesConstrainedTo = ["ApiUtil.java"]
-    configOptions = [delegatePattern: "true", title: "ppa-web-batch"]
+    configOptions = [delegatePattern: "true", title: "ppa-batch-mcs"]
     validateSpec = true
     importMappings = [Problem:"org.zalando.problem.Problem"]
 }

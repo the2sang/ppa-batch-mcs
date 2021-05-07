@@ -33,7 +33,7 @@ Refer to [Doing API-First development][] for more details.
 
 ### Packaging as jar
 
-To build the final jar and optimize the PPAWebBatch application for production, run:
+To build the final jar and optimize the ppa-batch-mcs application for production, run:
 
 ```
 ./gradlew -Pprod clean bootJar

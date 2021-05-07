@@ -1,13 +1,13 @@
 {
-  "name": "ppa-web-batch",
+  "name": "ppa-batch-mcs",
   "version": "0.0.0",
   "private": true,
-  "description": "Description for PPAWebBatch",
+  "description": "Description for ppa-batch-mcs",
   "license": "UNLICENSED",
   "scripts": {
     "prettier:check": "prettier --check \"{,src/**/}*.{md,json,yml,html,java}\"",
     "prettier:format": "prettier --write \"{,src/**/}*.{md,json,yml,html,java}\"",
-    "docker:db:up": "echo \"Docker for db oracle not configured for application PPAWebBatch\"",
+    "docker:db:up": "echo \"Docker for db oracle not configured for application ppa-batch-mcs\"",
     "docker:jhipster-registry:up": "docker-compose -f src/main/docker/jhipster-registry.yml up -d",
     "docker:jhipster-registry:down": "docker-compose -f src/main/docker/jhipster-registry.yml down -v --remove-orphans",
     "docker:others:await": "echo \"Waiting for jhipster-registry to start\" && wait-on http-get://localhost:8761/management/health && echo \"jhipster-registry started\"",
