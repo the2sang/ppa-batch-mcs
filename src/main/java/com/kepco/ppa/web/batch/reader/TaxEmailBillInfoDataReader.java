@@ -20,14 +20,6 @@ public class TaxEmailBillInfoDataReader {
 
     public final int READER_FETCH_SIZE = 50;
 
-    @Setter
-    @Getter
-    public String batchIds;
-
-    public TaxEmailBillInfoDataReader(String batchIds) {
-        this.batchIds = batchIds;
-    }
-
     public JdbcPagingItemReader<TaxEmailBillInfoVO> getPagingReader() {
         JdbcPagingItemReader<TaxEmailBillInfoVO> reader = new JdbcPagingItemReader<>();
 
@@ -35,14 +27,14 @@ public class TaxEmailBillInfoDataReader {
         reader.setPageSize(READER_FETCH_SIZE);
         reader.setRowMapper(new TaxEmailBillInfoRowMapper());
 
-        reader.setQueryProvider(createQuery(this.batchIds));
+        reader.setQueryProvider(createQuery());
 
         return reader;
     }
 
-    private OraclePagingQueryProvider createQuery(String batchIds) {
+    private OraclePagingQueryProvider createQuery() {
         Map<String, Order> sortKeys = new HashMap<>(1);
-        sortKeys.put("ISSUE_ID", Order.ASCENDING);
+        sortKeys.put("ISSUE_DT", Order.DESCENDING);
 
         OraclePagingQueryProvider queryProvider = new OraclePagingQueryProvider();
         queryProvider.setSelectClause("*");
@@ -59,8 +51,7 @@ public class TaxEmailBillInfoDataReader {
         sb.append("   AND MAIL_STATUS_CODE IS NULL"); //메일진행상태(null:DEFAULT,'01':작성중및회계처리중,'02'회계처리완료,'98':공급받는자반려
         sb.append("   AND (INVOICEE_CONTACT_EMAIL1 LIKE '%ppa%' OR INVOICEE_CONTACT_EMAIL2 LIKE '%ppa%') "); // 공급자 이메일이 ppa로 시작
         sb.append("   AND (INVOICEE_TAX_REGIST_ID != null OR INVOICEE_TAX_REGIST_ID != '0') "); // 종사업장코드가 null이 아니거나 0이 아닌것
-        sb.append("  AND ISSUE_DT >= TO_CHAR(sysdate - 61, 'YYYYMMDDhh24miss')"); //31일 전 데이터까지 조회
-        sb.append(" AND ID IN ('" + batchIds + "')");
+        sb.append("  AND ISSUE_DT >= TO_CHAR(sysdate - 31, 'YYYYMMDDhh24miss')"); //31일 전 데이터까지 조회
 
         return sb.toString();
     }

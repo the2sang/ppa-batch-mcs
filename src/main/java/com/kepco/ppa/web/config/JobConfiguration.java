@@ -9,7 +9,12 @@ import com.kepco.ppa.web.batch.service.TbTaxBillInfoEncInitial;
 import com.kepco.ppa.web.batch.writer.*;
 import com.kepco.ppa.web.batch.writer.preparedStatmementSetter.*;
 import com.kepco.ppa.web.common.YAMLConfig;
-import com.kepco.ppa.web.web.rest.CreateBachIdsJobParameter;
+import java.io.IOException;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -32,13 +37,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
-
-import javax.sql.DataSource;
-import java.io.IOException;
-import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created By K.H.C (Hanjun KDN)
@@ -75,16 +73,6 @@ public class JobConfiguration {
     @Autowired
     private YAMLConfig dbencConfig;
 
-    @Autowired
-    private CreateBachIdsJobParameter jobParameter;
-
-    @Bean
-    @JobScope // (2)
-    public CreateBachIdsJobParameter jobParameter() {
-        return new CreateBachIdsJobParameter();
-    }
-
-
     @Bean
     public JobLauncher jobLauncher() throws Exception {
         SimpleJobLauncher jobLauncher = new SimpleJobLauncher();
@@ -94,17 +82,12 @@ public class JobConfiguration {
         return jobLauncher;
     }
 
-
     @Bean
     @StepScope
     public JdbcPagingItemReader<TaxEmailBillInfoVO> pagingTaxEmailBillInfoItemReader() {
+        //log.info(">>>>>>>>>>> time={}, batchIds={}", jobParameter.getTime(), jobParameter.getBatchIds());
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("time", jobParameter.getTime()); // (4)
-        params.put("batchIds", jobParameter.getBatchIds());
-        log.info(">>>>>>>>>>> time={}, batchIds={}", jobParameter.getTime(), jobParameter.getBatchIds());
-
-        TaxEmailBillInfoDataReader dataReader = new TaxEmailBillInfoDataReader(jobParameter.getBatchIds());
+        TaxEmailBillInfoDataReader dataReader = new TaxEmailBillInfoDataReader();
         dataReader.setDataSource(this.etaxDataSource);
 
         return dataReader.getPagingReader();
@@ -112,7 +95,7 @@ public class JobConfiguration {
 
     @Bean
     @StepScope
-    public JdbcPagingItemReader<TaxEmailItemListVO> pagingTaxEmailItemListItemReader(){
+    public JdbcPagingItemReader<TaxEmailItemListVO> pagingTaxEmailItemListItemReader() {
         TaxEmailItemListDataReader dataReader = new TaxEmailItemListDataReader();
         dataReader.setDataSource(this.etaxDataSource);
 
@@ -135,11 +118,9 @@ public class JobConfiguration {
             dbenc = "1";
         }
 
-
         databaseItemWriter.setSql(writer.getWriteSQL(dbenc));
 
-        ItemPreparedStatementSetter<TbTaxBillInfoEncVO> valueSetter =
-            new TbTaxBillInfoEncSetter(this.exediDataSource);
+        ItemPreparedStatementSetter<TbTaxBillInfoEncVO> valueSetter = new TbTaxBillInfoEncSetter(this.exediDataSource);
         databaseItemWriter.setItemPreparedStatementSetter(valueSetter);
 
         return databaseItemWriter;
@@ -154,8 +135,7 @@ public class JobConfiguration {
 
         databaseItemWriter.setSql(writer.getWriteSQL());
 
-        ItemPreparedStatementSetter<TbTaxBillInfoEncVO> valueSetter =
-            new IfTaxBillResultInfoSetter(this.exediDataSource);
+        ItemPreparedStatementSetter<TbTaxBillInfoEncVO> valueSetter = new IfTaxBillResultInfoSetter(this.exediDataSource);
         databaseItemWriter.setItemPreparedStatementSetter(valueSetter);
 
         return databaseItemWriter;
@@ -168,12 +148,9 @@ public class JobConfiguration {
         JdbcBatchItemWriter<TbTaxBillInfoEncVO> databaseItemWriter = new JdbcBatchItemWriter<>();
         databaseItemWriter.setDataSource(this.exediDataSource);
 
-
-
         databaseItemWriter.setSql(writer.getWriteSQL());
 
-        ItemPreparedStatementSetter<TbTaxBillInfoEncVO> valueSetter =
-            new TbStatusHistSetter(this.exediDataSource);
+        ItemPreparedStatementSetter<TbTaxBillInfoEncVO> valueSetter = new TbStatusHistSetter(this.exediDataSource);
         databaseItemWriter.setItemPreparedStatementSetter(valueSetter);
 
         return databaseItemWriter;
@@ -188,8 +165,7 @@ public class JobConfiguration {
 
         databaseItemWriter.setSql(writer.getWriteSQL());
 
-        ItemPreparedStatementSetter<TbTaxBillInfoEncVO> valueSetter =
-            new EtsTaxMetaInfoTbSetter(this.exediDataSource);
+        ItemPreparedStatementSetter<TbTaxBillInfoEncVO> valueSetter = new EtsTaxMetaInfoTbSetter(this.exediDataSource);
         databaseItemWriter.setItemPreparedStatementSetter(valueSetter);
 
         return databaseItemWriter;
@@ -204,8 +180,7 @@ public class JobConfiguration {
 
         databaseItemWriter.setSql(writer.getWriteSQL());
 
-        ItemPreparedStatementSetter<TbTaxBillInfoEncVO> valueSetter =
-            new EtsTaxMainInfoTbSetter(this.exediDataSource);
+        ItemPreparedStatementSetter<TbTaxBillInfoEncVO> valueSetter = new EtsTaxMainInfoTbSetter(this.exediDataSource);
         databaseItemWriter.setItemPreparedStatementSetter(valueSetter);
 
         return databaseItemWriter;
@@ -220,24 +195,23 @@ public class JobConfiguration {
 
         databaseItemWriter.setSql(writer.getWriteSQL());
 
-        ItemPreparedStatementSetter<TbTaxBillInfoEncVO> valueSetter =
-            new IfTaxBillInfoSetter(this.exediDataSource);
+        ItemPreparedStatementSetter<TbTaxBillInfoEncVO> valueSetter = new IfTaxBillInfoSetter(this.exediDataSource);
         databaseItemWriter.setItemPreparedStatementSetter(valueSetter);
 
         return databaseItemWriter;
     }
+
     ///////////////////////////////////////////////
     // TB_TRADE_ITEM_LIST
     @Bean
-    JdbcBatchItemWriter<TaxEmailItemListVO> tbTradeItemListWriter(){
+    JdbcBatchItemWriter<TaxEmailItemListVO> tbTradeItemListWriter() {
         TbTradeItemListTableWriter writer = new TbTradeItemListTableWriter();
         JdbcBatchItemWriter<TaxEmailItemListVO> databaseItemWriter = new JdbcBatchItemWriter<>();
         databaseItemWriter.setDataSource(this.exediDataSource);
 
         databaseItemWriter.setSql(writer.getWriteSQL());
 
-        ItemPreparedStatementSetter<TaxEmailItemListVO> valueSetter =
-            new TbTradeItemListSetter(this.exediDataSource);
+        ItemPreparedStatementSetter<TaxEmailItemListVO> valueSetter = new TbTradeItemListSetter(this.exediDataSource);
         databaseItemWriter.setItemPreparedStatementSetter(valueSetter);
 
         return databaseItemWriter;
@@ -245,15 +219,14 @@ public class JobConfiguration {
 
     // ETS_TAX_LINE_INFO_TB
     @Bean
-    JdbcBatchItemWriter<TaxEmailItemListVO> etsTaxLineInfoTbWriter(){
+    JdbcBatchItemWriter<TaxEmailItemListVO> etsTaxLineInfoTbWriter() {
         EtsTaxLineInfoTableWriter writer = new EtsTaxLineInfoTableWriter();
         JdbcBatchItemWriter<TaxEmailItemListVO> databaseItemWriter = new JdbcBatchItemWriter<>();
         databaseItemWriter.setDataSource(this.exediDataSource);
 
         databaseItemWriter.setSql(writer.getWriteSQL());
 
-        ItemPreparedStatementSetter<TaxEmailItemListVO> valueSetter =
-            new EtsTaxLineInfoTbSetter(this.exediDataSource);
+        ItemPreparedStatementSetter<TaxEmailItemListVO> valueSetter = new EtsTaxLineInfoTbSetter(this.exediDataSource);
         databaseItemWriter.setItemPreparedStatementSetter(valueSetter);
 
         return databaseItemWriter;
@@ -261,19 +234,19 @@ public class JobConfiguration {
 
     // IF_TAX_BILL_ITEM_LIST
     @Bean
-    JdbcBatchItemWriter<TaxEmailItemListVO> ifTaxBillItemListWriter(){
+    JdbcBatchItemWriter<TaxEmailItemListVO> ifTaxBillItemListWriter() {
         IfTaxBillItemListTableWriter writer = new IfTaxBillItemListTableWriter();
         JdbcBatchItemWriter<TaxEmailItemListVO> databaseItemWriter = new JdbcBatchItemWriter<>();
         databaseItemWriter.setDataSource(this.exediDataSource);
 
         databaseItemWriter.setSql(writer.getWriteSQL());
 
-        ItemPreparedStatementSetter<TaxEmailItemListVO> valueSetter =
-            new IfTaxBillItemSetter(this.exediDataSource);
+        ItemPreparedStatementSetter<TaxEmailItemListVO> valueSetter = new IfTaxBillItemSetter(this.exediDataSource);
         databaseItemWriter.setItemPreparedStatementSetter(valueSetter);
 
         return databaseItemWriter;
     }
+
     ///////////////////////////////////////////////
 
     @Bean
@@ -299,24 +272,35 @@ public class JobConfiguration {
     public CompositeItemWriter<TbTaxBillInfoEncVO> compositeItemWriter() {
         CompositeItemWriter<TbTaxBillInfoEncVO> compositeItemWriter = new CompositeItemWriter<>();
 
-        compositeItemWriter.setDelegates(Arrays.asList(tbTaxBillInfoEncWriter(), ifTaxBillResultInfoWriter(), tbStatusHistWriter(), etsTaxMetaInfoTbWriter(), etsTaxMainInfoTbWriter(), ifTaxBillInfoWriter(), taxEmailBillInfoEndingUpdate()));
+        compositeItemWriter.setDelegates(
+            Arrays.asList(
+                tbTaxBillInfoEncWriter(),
+                ifTaxBillResultInfoWriter(),
+                tbStatusHistWriter(),
+                etsTaxMetaInfoTbWriter(),
+                etsTaxMainInfoTbWriter(),
+                ifTaxBillInfoWriter(),
+                taxEmailBillInfoEndingUpdate()
+            )
+        );
 
         return compositeItemWriter;
     }
 
     //PPA 배치처리를 위한 3개 테이블 Insert 및 Update
     @Bean
-    public CompositeItemWriter<TaxEmailItemListVO> compositeStep2ItemWriter(){
+    public CompositeItemWriter<TaxEmailItemListVO> compositeStep2ItemWriter() {
         CompositeItemWriter<TaxEmailItemListVO> compositeItemWriter = new CompositeItemWriter<>();
 
-        compositeItemWriter.setDelegates(Arrays.asList(tbTradeItemListWriter(), etsTaxLineInfoTbWriter(), ifTaxBillItemListWriter(), taxEmailItemListEndingUpdate()));
+        compositeItemWriter.setDelegates(
+            Arrays.asList(tbTradeItemListWriter(), etsTaxLineInfoTbWriter(), ifTaxBillItemListWriter(), taxEmailItemListEndingUpdate())
+        );
 
         return compositeItemWriter;
     }
 
-    @Bean  // 운영 환경에서 (반영될 부분)
+    @Bean // 운영 환경에서 (반영될 부분)
     public ItemProcessorAdapter<TaxEmailBillInfoVO, TbTaxBillInfoEncVO> tbTaxBillInfoEncItemProcessor(TbTaxBillInfoEncInitial service) {
-
         ItemProcessorAdapter<TaxEmailBillInfoVO, TbTaxBillInfoEncVO> adapter = new ItemProcessorAdapter<>();
 
         adapter.setTargetObject(service);
@@ -327,21 +311,15 @@ public class JobConfiguration {
 
     @JobScope
     @Bean
-    public Step step1()  {
+    public Step step1() {
         log.info("STEP-1 시작...");
 
-
-        return stepBuilderFactory.get("step1")
+        return stepBuilderFactory
+            .get("step1")
             .<TaxEmailBillInfoVO, TbTaxBillInfoEncVO>chunk(50)
             .reader(pagingTaxEmailBillInfoItemReader())
             .processor(tbTaxBillInfoEncItemProcessor(null))
             .writer(compositeItemWriter())
-            .faultTolerant()
-            .skip(NullPointerException.class)
-            .skip(ClassCastException .class)
-            .skip(NumberFormatException .class)
-            .skip(ArrayIndexOutOfBoundsException.class)
-            .skipLimit(5)
             .build();
     }
 
@@ -349,24 +327,22 @@ public class JobConfiguration {
     @Bean
     public Step step2() {
         log.info("STEP-2 시작...");
-        return stepBuilderFactory.get("step2")
+        return stepBuilderFactory
+            .get("step2")
             .<TaxEmailItemListVO, TaxEmailItemListVO>chunk(50)
             .reader(pagingTaxEmailItemListItemReader())
             .writer(compositeStep2ItemWriter())
             .build();
     }
 
-    @Bean(name="ppaBatchJob")
+    @Bean(name = "ppaBatchJob")
     public Job ppaBatchJob() {
-        return jobBuilderFactory.get("ppaBatchJob")
-
+        return jobBuilderFactory
+            .get("ppaBatchJob")
             .preventRestart()
             .incrementer(new RunIdIncrementer())
             .start(step1())
             .next(step2())
             .build();
     }
-
-
-
 }
