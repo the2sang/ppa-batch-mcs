@@ -280,6 +280,7 @@ dependencies {
     liquibaseRuntime "com.oracle.database.jdbc:ojdbc8"
     //jhipster-needle-gradle-dependency - JHipster will add additional dependencies here
     implementation 'org.springframework.boot:spring-boot-starter-batch'
+    implementation 'org.springframework.boot:spring-boot-starter-quartz'
     testImplementation 'org.springframework.batch:spring-batch-test'
     implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
     implementation group: 'com.oracle.ojdbc', name: 'orai18n', version: '19.3.0.0'
