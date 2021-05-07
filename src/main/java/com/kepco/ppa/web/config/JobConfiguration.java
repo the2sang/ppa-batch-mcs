@@ -9,6 +9,7 @@ import com.kepco.ppa.web.batch.service.TbTaxBillInfoEncInitial;
 import com.kepco.ppa.web.batch.writer.*;
 import com.kepco.ppa.web.batch.writer.preparedStatmementSetter.*;
 import com.kepco.ppa.web.common.YAMLConfig;
+import com.kepco.ppa.web.web.rest.CreateBachIdsJobParameter;
 import java.io.IOException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Arrays;
@@ -33,6 +34,7 @@ import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilde
 import org.springframework.batch.item.support.CompositeItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -70,8 +72,17 @@ public class JobConfiguration {
     @Qualifier("exedidatasource")
     public DataSource exediDataSource;
 
+    @Value("${DB_ENC}")
+    private String dbencConfig;
+
     @Autowired
-    private YAMLConfig dbencConfig;
+    private CreateBachIdsJobParameter jobParameter;
+
+    @Bean
+    @JobScope // (2)
+    public CreateBachIdsJobParameter jobParameter() {
+        return new CreateBachIdsJobParameter();
+    }
 
     @Bean
     public JobLauncher jobLauncher() throws Exception {
@@ -87,7 +98,12 @@ public class JobConfiguration {
     public JdbcPagingItemReader<TaxEmailBillInfoVO> pagingTaxEmailBillInfoItemReader() {
         //log.info(">>>>>>>>>>> time={}, batchIds={}", jobParameter.getTime(), jobParameter.getBatchIds());
 
-        TaxEmailBillInfoDataReader dataReader = new TaxEmailBillInfoDataReader();
+        Map<String, Object> params = new HashMap<>();
+        params.put("time", jobParameter.getTime()); // (4)
+        params.put("batchIds", jobParameter.getBatchIds());
+        log.info(">>>>>>>>>>> time={}, batchIds={}", jobParameter.getTime(), jobParameter.getBatchIds());
+
+        TaxEmailBillInfoDataReader dataReader = new TaxEmailBillInfoDataReader(jobParameter.getBatchIds());
         dataReader.setDataSource(this.etaxDataSource);
 
         return dataReader.getPagingReader();
@@ -110,15 +126,15 @@ public class JobConfiguration {
         JdbcBatchItemWriter<TbTaxBillInfoEncVO> databaseItemWriter = new JdbcBatchItemWriter<>();
         databaseItemWriter.setDataSource(this.exediDataSource);
 
-        System.out.println("DB_ENC: " + dbencConfig.getDB_ENC());
+        System.out.println("DB_ENC:--------------------------------- " + dbencConfig);
 
-        String dbenc = dbencConfig.getDB_ENC();
+        //
 
-        if (dbenc == null) {
-            dbenc = "1";
+        if (dbencConfig == null) {
+            dbencConfig = "1";
         }
 
-        databaseItemWriter.setSql(writer.getWriteSQL(dbenc));
+        databaseItemWriter.setSql(writer.getWriteSQL(dbencConfig));
 
         ItemPreparedStatementSetter<TbTaxBillInfoEncVO> valueSetter = new TbTaxBillInfoEncSetter(this.exediDataSource);
         databaseItemWriter.setItemPreparedStatementSetter(valueSetter);
