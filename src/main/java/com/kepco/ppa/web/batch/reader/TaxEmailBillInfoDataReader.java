@@ -13,7 +13,6 @@ import org.springframework.batch.item.database.Order;
 import org.springframework.batch.item.database.support.OraclePagingQueryProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@NoArgsConstructor
 public class TaxEmailBillInfoDataReader {
 
     @Autowired
@@ -25,6 +24,10 @@ public class TaxEmailBillInfoDataReader {
     @Setter
     @Getter
     public String batchIds;
+
+    public TaxEmailBillInfoDataReader(String batchIds) {
+        this.batchIds = batchIds;
+    }
 
     public JdbcPagingItemReader<TaxEmailBillInfoVO> getPagingReader() {
         JdbcPagingItemReader<TaxEmailBillInfoVO> reader = new JdbcPagingItemReader<>();
@@ -58,6 +61,11 @@ public class TaxEmailBillInfoDataReader {
         sb.append("   AND (INVOICEE_CONTACT_EMAIL1 LIKE '%ppa%' OR INVOICEE_CONTACT_EMAIL2 LIKE '%ppa%') "); // 공급자 이메일이 ppa로 시작
         sb.append("   AND (INVOICEE_TAX_REGIST_ID != null OR INVOICEE_TAX_REGIST_ID != '0') "); // 종사업장코드가 null이 아니거나 0이 아닌것
         sb.append("  AND ISSUE_DT >= TO_CHAR(sysdate - 61, 'YYYYMMDDhh24miss')"); //31일 전 데이터까지 조회
+
+        // 배치 ID별로 수집하여 실행
+        if (batchIds != null) {
+            sb.append(" AND ID IN (" + batchIds + ")");
+        }
 
         return sb.toString();
     }

@@ -5,6 +5,8 @@ import com.kepco.ppa.web.batch.domain.TaxEmailItemListVO;
 import java.util.HashMap;
 import java.util.Map;
 import javax.sql.DataSource;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
 import org.springframework.batch.item.database.Order;

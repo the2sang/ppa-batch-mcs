@@ -12,7 +12,9 @@
 # Full reference is available at:
 # http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 # ===================================================================
+cronExpression: '0 0/30 * * * ? *'
 DB_ENC: 1
+quartz_run: 'prod'
 logging:
   level:
     ROOT: INFO
@@ -31,6 +33,25 @@ management:
     export:
       prometheus:
         enabled: false
+org:
+  quartz:
+    dataSource:
+      myDS:
+        driverClassName: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+        url: jdbc:log4jdbc:oracle:thin:@168.78.201.162:21152:XE
+        maxConnections: 10
+        user: etax
+        password: 1qaz2wsx#edc
+        validationQuery: select 1
+    jobStore:
+      class: org.quartz.impl.jdbcjobstore.JobStoreTX
+      dataSource: myDS
+      driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+      isClustered: false
+      tablePrefix: 'QRTZ_   '
+      useProperties: false
+scheduler:
+  enabled: true
 
 spring:
   devtools:

@@ -32,6 +32,9 @@ public class QuartzConfig {
     @Value("${cronExpression}")
     private String cronExpression;
 
+    @Value("${quartz_run}")
+    private String quartzRun;
+
     @Bean
     public JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor(JobRegistry jobRegistry) {
         JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor = new JobRegistryBeanPostProcessor();
@@ -70,8 +73,17 @@ public class QuartzConfig {
     }
 
     public Properties quartzProperties() throws IOException {
+        String quartzRunBase = this.quartzRun;
+        String classPathResourceValue = "/config/application-dev.yml"; //Default dev
+
+        if (quartzRunBase != null && quartzRunBase.equals("dev")) {
+            classPathResourceValue = "/config/application-dev.yml";
+        } else if (quartzRunBase != null && quartzRunBase.equals("prod")) {
+            classPathResourceValue = "/config/application-prod.yml";
+        }
+
         PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
-        propertiesFactoryBean.setLocation(new ClassPathResource("/config/application-dev.yml"));
+        propertiesFactoryBean.setLocation(new ClassPathResource(classPathResourceValue));
         //propertiesFactoryBean.setLocation(new ClassPathResource("/config/application-prod.yml"));
         propertiesFactoryBean.afterPropertiesSet();
         return propertiesFactoryBean.getObject();
