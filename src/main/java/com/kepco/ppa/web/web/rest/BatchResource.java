@@ -27,15 +27,15 @@ public class BatchResource {
     @Autowired
     Job ppaBatchJob;
 
-//    @Autowired
-//    JobRepository jobRepository;
-//
-//    public JobLauncher jobLauncher() throws Exception {
-//        SimpleJobLauncher jobLauncher = new SimpleJobLauncher();
-//        jobLauncher.setJobRepository(jobRepository);
-//        jobLauncher.afterPropertiesSet();
-//        return jobLauncher;
-//    }
+    //    @Autowired
+    //    JobRepository jobRepository;
+    //
+    //    public JobLauncher jobLauncher() throws Exception {
+    //        SimpleJobLauncher jobLauncher = new SimpleJobLauncher();
+    //        jobLauncher.setJobRepository(jobRepository);
+    //        jobLauncher.afterPropertiesSet();
+    //        return jobLauncher;
+    //    }
 
     private JobParameters createInitialJobParameterMap(String batchIds) {
         Map<String, JobParameter> m = new HashMap<>();
@@ -48,11 +48,8 @@ public class BatchResource {
     //배치 실행
     @GetMapping("/ppa-batch-starting/{batchIds}")
     @ResponseBody
-    @CrossOrigin("*")
-    public String startBatch(@PathVariable(value = "batchIds", required = true) final String batchIds)
-        throws Exception {
-
-
+    @CrossOrigin(origins = "*")
+    public String startBatch(@PathVariable(value = "batchIds", required = true) final String batchIds) throws Exception {
         jobLauncher.run(ppaBatchJob, createInitialJobParameterMap(batchIds));
         return "startBatch";
     }

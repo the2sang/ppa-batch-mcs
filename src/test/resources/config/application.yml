@@ -17,15 +17,15 @@ eureka:
   client:
     enabled: false
   instance:
-    appname: PPAWebBatch
-    instanceId: PPAWebBatch:${spring.application.instance-id:${random.value}}
+    appname: ppa-batch-mcs
+    instanceId: ppa-batch-mcs:${spring.application.instance-id:${random.value}}
 
 spring:
   profiles:
     # Uncomment the following line to enable tests against production database type rather than H2, using Testcontainers
     #active: testcontainers
   application:
-    name: PPAWebBatch
+    name: ppa-batch-mcs
   cloud:
     config:
       enabled: false
@@ -67,13 +67,13 @@ spring:
     basename: i18n/messages
   task:
     execution:
-      thread-name-prefix: ppa-web-batch-task-
+      thread-name-prefix: ppa-batch-mcs-task-
       pool:
         core-size: 1
         max-size: 50
         queue-capacity: 10000
     scheduling:
-      thread-name-prefix: ppa-web-batch-scheduling-
+      thread-name-prefix: ppa-batch-mcs-scheduling-
       pool:
         size: 1
   thymeleaf:

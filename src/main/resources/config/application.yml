@@ -16,16 +16,16 @@
 
 eureka:
   client:
-    enabled: true
+    enabled: false
     healthcheck:
-      enabled: true
-    fetch-registry: true
-    register-with-eureka: true
+      enabled: false
+    fetch-registry: false
+    register-with-eureka: false
     instance-info-replication-interval-seconds: 10
     registry-fetch-interval-seconds: 10
   instance:
-    appname: ppawebbatch
-    instanceId: ppawebbatch:${spring.application.instance-id:${random.value}}
+    appname: ppa-batch-mcs
+    instanceId: ppa-batch-mcs:${spring.application.instance-id:${random.value}}
     lease-renewal-interval-in-seconds: 5
     lease-expiration-duration-in-seconds: 10
     status-page-url-path: ${management.endpoints.web.base-path}/info
@@ -119,7 +119,7 @@ spring:
       names: job
     initialize-schema: never
   application:
-    name: PPAWebBatch
+    name: ppa-batch-mcs
   profiles:
     # The commented value for `active` can be replaced with valid Spring profiles to load.
     # Otherwise, it will be filled in by gradle when building the JAR file
@@ -160,13 +160,13 @@ spring:
     allow-bean-definition-overriding: true
   task:
     execution:
-      thread-name-prefix: ppa-web-batch-task-
+      thread-name-prefix: ppa-batch-mcs-task-
       pool:
         core-size: 2
         max-size: 50
         queue-capacity: 10000
     scheduling:
-      thread-name-prefix: ppa-web-batch-scheduling-
+      thread-name-prefix: ppa-batch-mcs-scheduling-
       pool:
         size: 2
   thymeleaf:
@@ -204,12 +204,12 @@ jhipster:
   #   allow-credentials: true
   #   max-age: 1800
   mail:
-    from: PPAWebBatch@localhost
+    from: ppa-batch-mcs@localhost
   api-docs:
     default-include-pattern: ${server.servlet.context-path:}/api/.*
     management-include-pattern: ${server.servlet.context-path:}/management/.*
-    title: PPAWebBatch API
-    description: PPAWebBatch API documentation
+    title: ppa-batch-mcs API
+    description: ppa-batch-mcs API documentation
     version: 0.0.1
     terms-of-service-url:
     contact-name:
@@ -232,11 +232,13 @@ jhipster:
 # ===================================================================
 
 # application:
-  cors:
-    allowed-origins: "*"
-    allowed-methods: "*"
-    allowed-headers: "*"
-    exposed-headers: "Authorization, Link, X-Total-Count"
-    allow-credentials: true
-    max-age: 1800
-
+cors:
+  allowed-origins: 'http://localhost:9095'
+  #   allowed-methods: "*"
+  #   allowed-headers: "*"
+  #   exposed-headers: "Authorization,Link,X-Total-Count"
+  #   allow-credentials: true
+  #   max-age: 1800
+  gateway:
+    rate-limiting:
+      enabled: true
