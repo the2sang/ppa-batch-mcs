@@ -16,11 +16,11 @@
 
 eureka:
   client:
-    enabled: false
+    enabled: true
     healthcheck:
-      enabled: false
-    fetch-registry: false
-    register-with-eureka: false
+      enabled: true
+    fetch-registry: true
+    register-with-eureka: true
     instance-info-replication-interval-seconds: 10
     registry-fetch-interval-seconds: 10
   instance:
@@ -174,6 +174,8 @@ spring:
   output:
     ansi:
       console-available: true
+  pid:
+    file: batch-mcs.pid
 
 server:
   servlet:
