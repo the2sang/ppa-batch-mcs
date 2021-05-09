@@ -356,6 +356,18 @@ public class JobConfiguration {
             .build();
     }
 
+    //    @Bean(name = "ppaBatchJob")
+    //    public Job ppaBatchJob() {
+    //        return jobBuilderFactory
+    //            .get("ppaBatchJob")
+    //            .preventRestart()
+    //            .incrementer(new RunIdIncrementer())
+    //            .listener(JsrJobListenerFactoryBean.getListener(new JobLoggerListener()))
+    //            .start(step1())
+    //            .next(step2())
+    //            .build();
+    //    }
+
     @Bean(name = "ppaBatchJob")
     public Job ppaBatchJob() {
         return jobBuilderFactory
@@ -364,7 +376,12 @@ public class JobConfiguration {
             .incrementer(new RunIdIncrementer())
             .listener(JsrJobListenerFactoryBean.getListener(new JobLoggerListener()))
             .start(step1())
-            .next(step2())
+            .on("FAILED")
+            .end()
+            .from(step1())
+            .on("*")
+            .to(step2())
+            .end()
             .build();
     }
 }
