@@ -3,6 +3,8 @@ package com.kepco.ppa.web.config;
 import com.kepco.ppa.web.batch.domain.TaxEmailBillInfoVO;
 import com.kepco.ppa.web.batch.domain.TaxEmailItemListVO;
 import com.kepco.ppa.web.batch.domain.TbTaxBillInfoEncVO;
+import com.kepco.ppa.web.batch.listener.JobLoggerListener;
+import com.kepco.ppa.web.batch.listener.LoggingStepStartStopListener;
 import com.kepco.ppa.web.batch.reader.TaxEmailBillInfoDataReader;
 import com.kepco.ppa.web.batch.reader.TaxEmailItemListDataReader;
 import com.kepco.ppa.web.batch.service.TbTaxBillInfoEncInitial;
@@ -22,6 +24,7 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.*;
 import org.springframework.batch.core.explore.JobExplorer;
+import org.springframework.batch.core.jsr.configuration.xml.JsrJobListenerFactoryBean;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
@@ -336,6 +339,7 @@ public class JobConfiguration {
             .reader(pagingTaxEmailBillInfoItemReader())
             .processor(tbTaxBillInfoEncItemProcessor(null))
             .writer(compositeItemWriter())
+            .listener(new LoggingStepStartStopListener())
             .build();
     }
 
@@ -348,6 +352,7 @@ public class JobConfiguration {
             .<TaxEmailItemListVO, TaxEmailItemListVO>chunk(50)
             .reader(pagingTaxEmailItemListItemReader())
             .writer(compositeStep2ItemWriter())
+            .listener(new LoggingStepStartStopListener())
             .build();
     }
 
@@ -357,6 +362,7 @@ public class JobConfiguration {
             .get("ppaBatchJob")
             .preventRestart()
             .incrementer(new RunIdIncrementer())
+            .listener(JsrJobListenerFactoryBean.getListener(new JobLoggerListener()))
             .start(step1())
             .next(step2())
             .build();
