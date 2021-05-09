@@ -283,6 +283,9 @@ public class JobConfiguration {
             .dataSource(etaxDataSource)
             .beanMapped()
             .sql("UPDATE TAX_EMAIL_BILL_INFO SET MAIL_STATUS_CODE = '01' WHERE ISSUE_ID = :issueId")
+            .sql(
+                "INSERT INTO PPA_BATCH_STATUS (ISSUE_ID, CREATED, STATUS) VALUES ( :issueId, TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI'),  '1' )"
+            )
             .build();
     }
 
