@@ -6,6 +6,7 @@ import com.kepco.ppa.web.batch.domain.TbTaxBillInfoEncVO;
 import com.kepco.ppa.web.batch.listener.JobLoggerListener;
 import com.kepco.ppa.web.batch.listener.LoggingStepStartStopListener;
 import com.kepco.ppa.web.batch.reader.TaxEmailBillInfoDataReader;
+import com.kepco.ppa.web.batch.reader.TaxEmailBillInfoEncCheckReader;
 import com.kepco.ppa.web.batch.reader.TaxEmailItemListDataReader;
 import com.kepco.ppa.web.batch.service.TbTaxBillInfoEncInitial;
 import com.kepco.ppa.web.batch.writer.*;
@@ -107,6 +108,26 @@ public class JobConfiguration {
         log.info(">>>>>>>>>>> time={}, batchIds={}", jobParameter.getTime(), jobParameter.getBatchIds());
 
         TaxEmailBillInfoDataReader dataReader = new TaxEmailBillInfoDataReader(jobParameter.getBatchIds());
+        dataReader.setDataSource(this.etaxDataSource);
+
+        return dataReader.getPagingReader();
+    }
+
+    @Bean
+    @StepScope
+    public JdbcPagingItemReader<TaxEmailBillInfoVO> pagingTaxEmailBillInfoEncCheckItemReader() {
+        //log.info(">>>>>>>>>>> time={}, batchIds={}", jobParameter.getTime(), jobParameter.getBatchIds());
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("time", jobParameter.getTime()); // (4)
+        params.put("batchIds", jobParameter.getBatchIds());
+        log.info(
+            ">>>>>>>>>>> Step0 Enc Table ESERO_ISSUE_ID CHECK time={}, batchIds={}",
+            jobParameter.getTime(),
+            jobParameter.getBatchIds()
+        );
+
+        TaxEmailBillInfoEncCheckReader dataReader = new TaxEmailBillInfoEncCheckReader(jobParameter.getBatchIds());
         dataReader.setDataSource(this.etaxDataSource);
 
         return dataReader.getPagingReader();
@@ -277,6 +298,17 @@ public class JobConfiguration {
             .build();
     }
 
+    // TB_TAX_BILL_INFO_ENC 테이블에 ISERO_ISSUE_ID와 TAX_EMAIL_BILL_INFO ISSUE_ID 값이 같은 경우 배치처리에서 제외
+    // 기존 수기로 등록하거나 봇에서 등록 처리한 건이 이메일로 다시 와서 중복 처리하는 경우를 방지함.
+    @Bean
+    JdbcBatchItemWriter<TaxEmailBillInfoVO> taxEmailBillInfoEncCheckUpdate() {
+        return new JdbcBatchItemWriterBuilder<TaxEmailBillInfoVO>()
+            .dataSource(etaxDataSource)
+            .beanMapped()
+            .sql("UPDATE TAX_EMAIL_BILL_INFO SET MAIL_STATUS_CODE = '88' WHERE ISSUE_ID = :issueId")
+            .build();
+    }
+
     @Bean
     JdbcBatchItemWriter<TaxEmailItemListVO> taxEmailItemListEndingUpdate() {
         return new JdbcBatchItemWriterBuilder<TaxEmailItemListVO>()
@@ -347,6 +379,20 @@ public class JobConfiguration {
 
     @JobScope
     @Bean
+    public Step step0() {
+        log.info("STEP-0 시작...");
+
+        return stepBuilderFactory
+            .get("step0")
+            .<TaxEmailBillInfoVO, TaxEmailBillInfoVO>chunk(50)
+            .reader(pagingTaxEmailBillInfoEncCheckItemReader())
+            .writer(taxEmailBillInfoEncCheckUpdate())
+            .listener(new LoggingStepStartStopListener())
+            .build();
+    }
+
+    @JobScope
+    @Bean
     public Step step1() {
         log.info("STEP-1 시작...");
 
@@ -385,6 +431,23 @@ public class JobConfiguration {
     //            .build();
     //    }
 
+    //    @Bean(name = "ppaBatchJob")
+    //    public Job ppaBatchJob() {
+    //        return jobBuilderFactory
+    //            .get("ppaBatchJob")
+    //            .preventRestart()
+    //            .incrementer(new RunIdIncrementer())
+    //            .listener(JsrJobListenerFactoryBean.getListener(new JobLoggerListener()))
+    //            .start(step1())
+    //            .on("FAILED")
+    //            .end()
+    //            .from(step1())
+    //            .on("*")
+    //            .to(step2())
+    //            .end()
+    //            .build();
+    //    }
+
     @Bean(name = "ppaBatchJob")
     public Job ppaBatchJob() {
         return jobBuilderFactory
@@ -392,13 +455,9 @@ public class JobConfiguration {
             .preventRestart()
             .incrementer(new RunIdIncrementer())
             .listener(JsrJobListenerFactoryBean.getListener(new JobLoggerListener()))
-            .start(step1())
-            .on("FAILED")
-            .end()
-            .from(step1())
-            .on("*")
-            .to(step2())
-            .end()
+            .start(step0())
+            .next(step1())
+            .next(step2())
             .build();
     }
 }
