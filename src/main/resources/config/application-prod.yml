@@ -76,10 +76,7 @@ spring:
     hikari:
       poolName: Hikari
       auto-commit: false
-  jpa:
   # Replace by 'prod, faker' to add the faker context and have sample data loaded in production
-  liquibase:
-    contexts: dev
   thymeleaf:
     cache: true
   sleuth:

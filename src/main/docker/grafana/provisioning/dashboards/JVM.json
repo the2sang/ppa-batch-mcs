@@ -3683,8 +3683,8 @@
         "allFormat": "glob",
         "allValue": null,
         "current": {
-          "text": "localhost:8080",
-          "value": "localhost:8080"
+          "text": "localhost:9095",
+          "value": "localhost:9095"
         },
         "datasource": "Prometheus",
         "definition": "",
