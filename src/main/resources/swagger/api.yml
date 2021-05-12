@@ -5,25 +5,22 @@ info:
   title: 'ppa-batch-mcs'
   version: 0.0.1
 servers:
-  - url: http://localhost:9060/api
+  - url: http://localhost:9096/api
     description: Development server
-  - url: https://localhost:9060/api
+  - url: https://localhost:9096/api
     description: Development server with TLS Profile
 paths: {}
 components:
-  responses:
-    Problem:
-      description: error occurred - see status code and problem object for more information.
-      content:
-        'application/problem+json':
-          schema:
-            $ref: 'https://opensource.zalando.com/problem/schema.yaml#/Problem'
-
   securitySchemes:
     jwt:
       type: http
       description: JWT Authentication
       scheme: bearer
       bearerFormat: JWT
+    basic:
+      type: http
+      description: Basic Authentication
+      scheme: basic
 security:
   - jwt: []
+  - basic: []
