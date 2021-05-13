@@ -62,7 +62,11 @@ public class TbTaxBillInfoEncInitial {
         targetVO.setImportItemQuantity(0);
         targetVO.setInvoicerPartyId(CommonUtility.TrimNull(sourceVO.getInvoicerPartyId()).replaceAll("-", "")); //공급자 사업자번호
         targetVO.setInvoicerTaxRegistId(CommonUtility.TrimNull(sourceVO.getInvoicerTaxRegistId())); //공급자 종사업자 번호
-        targetVO.setInvoicerPartyName(CommonUtility.TrimNull(sourceVO.getInvoicerPartyName())); //공급자 상호
+        String invoicerPartyName = CommonUtility.TrimNull(sourceVO.getInvoicerPartyName());
+        if ("".equals(invoicerPartyName)) {
+            invoicerPartyName = "BLANK";
+        }
+        targetVO.setInvoicerPartyName(invoicerPartyName); //공급자 상호
         targetVO.setInvoicerCeoName(CommonUtility.TrimNull(sourceVO.getInvoicerCeoName())); //공급자 대표자
         targetVO.setInvoicerAddr(CommonUtility.cutStringByte(sourceVO.getInvoicerAddr(), 148)); //공급자  소재지
         targetVO.setInvoicerType(CommonUtility.TrimNull(CommonUtility.cutStringByte(sourceVO.getInvoicerType(), 38))); //공급자 업테
@@ -79,13 +83,10 @@ public class TbTaxBillInfoEncInitial {
         targetVO.setInvoiceeTaxRegistId(CommonUtility.getTaxRegistId(CommonUtility.TrimNull(invoiceeTaxRegistId))); //공급받는자 종사업장 번호
         targetVO.setInvoiceePartyName(CommonUtility.TrimNull(sourceVO.getInvoiceePartyName()));
         targetVO.setInvoiceeCeoName(CommonUtility.TrimNull(sourceVO.getInvoiceeCeoName()));
-
         String invoiceeAddr = CommonUtility.TrimNull(CommonUtility.cutStringByte(sourceVO.getInvoiceeAddr(), 148));
-
         if ("".equals(invoiceeAddr)) {
             invoiceeAddr = "BLANK";
         }
-
         targetVO.setInvoiceeAddr(invoiceeAddr);
         //-------------------
         targetVO.setInvoiceeType(CommonUtility.TrimNull(CommonUtility.cutStringByte(sourceVO.getInvoiceeType(), 38)));
