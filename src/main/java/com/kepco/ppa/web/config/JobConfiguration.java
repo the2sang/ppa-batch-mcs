@@ -384,7 +384,7 @@ public class JobConfiguration {
 
         return stepBuilderFactory
             .get("step0")
-            .<TaxEmailBillInfoVO, TaxEmailBillInfoVO>chunk(50)
+            .<TaxEmailBillInfoVO, TaxEmailBillInfoVO>chunk(20)
             .reader(pagingTaxEmailBillInfoEncCheckItemReader())
             .writer(taxEmailBillInfoEncCheckUpdate())
             .listener(new LoggingStepStartStopListener())
@@ -398,7 +398,7 @@ public class JobConfiguration {
 
         return stepBuilderFactory
             .get("step1")
-            .<TaxEmailBillInfoVO, TbTaxBillInfoEncVO>chunk(50)
+            .<TaxEmailBillInfoVO, TbTaxBillInfoEncVO>chunk(20)
             .reader(pagingTaxEmailBillInfoItemReader())
             .processor(tbTaxBillInfoEncItemProcessor(null))
             .writer(compositeItemWriter())
@@ -412,7 +412,7 @@ public class JobConfiguration {
         log.info("STEP-2 시작...");
         return stepBuilderFactory
             .get("step2")
-            .<TaxEmailItemListVO, TaxEmailItemListVO>chunk(50)
+            .<TaxEmailItemListVO, TaxEmailItemListVO>chunk(20)
             .reader(pagingTaxEmailItemListItemReader())
             .writer(compositeStep2ItemWriter())
             .listener(new LoggingStepStartStopListener())
