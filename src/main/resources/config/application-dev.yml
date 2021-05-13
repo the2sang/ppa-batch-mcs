@@ -12,8 +12,8 @@
 # Full reference is available at:
 # http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 # ===================================================================
-cronExpression: '0 0/1 * * * ? *'
-DB_ENC: '0'
+cronExpression: '0 0/20 * * * ? *'
+DB_ENC: '1'
 quartz_run: 'dev'
 logging:
   level:
@@ -48,20 +48,29 @@ spring:
       label: main # toggle to switch to a different version of the configuration as stored in git
       # it can be set to any label, branch or commit of the configuration source Git repository
   datasource:
-    driverClassName: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    url: jdbc:log4jdbc:oracle:thin:@168.78.201.162:21152:XE
-    username: etax
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:log4jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=168.78.211.152)(PORT=21152))(ADDRESS=(PROTOCOL=TCP)(HOST=168.78.211.156)(PORT=21152)))(CONNECT_DATA=(SERVICE_NAME=CATG)(FAILOVER_MODE=(TYPE=SELECT)(METHOD=BASIC))))
+    username: ETAX
     password: 1qaz2wsx#edc
+    hikari:
+      poolName: Hikari
+      auto-commit: false
   datasource1:
-    driverClassName: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    url: jdbc:log4jdbc:oracle:thin:@168.78.201.162:21152:XE
-    username: etax
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:log4jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=168.78.211.152)(PORT=21152))(ADDRESS=(PROTOCOL=TCP)(HOST=168.78.211.156)(PORT=21152)))(CONNECT_DATA=(SERVICE_NAME=CATG)(FAILOVER_MODE=(TYPE=SELECT)(METHOD=BASIC))))
+    username: ETAX
     password: 1qaz2wsx#edc
+    hikari:
+      poolName: Hikari
+      auto-commit: false
   datasource2:
-    driverClassName: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    url: jdbc:log4jdbc:oracle:thin:@168.78.201.162:21152:XE
-    username: exedi
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:log4jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=ON)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=168.78.211.152)(PORT=21152))(ADDRESS=(PROTOCOL=TCP)(HOST=168.78.211.156)(PORT=21152)))(CONNECT_DATA=(SERVICE_NAME=CATG)(FAILOVER_MODE=(TYPE=SELECT)(METHOD=BASIC))))
+    username: EXEDI
     password: CHWJ8_9_3123
+    hikari:
+      poolName: Hikari
+      auto-commit: false
   messages:
     cache-duration: PT1S # 1 second, see the ISO 8601 standard
   thymeleaf:

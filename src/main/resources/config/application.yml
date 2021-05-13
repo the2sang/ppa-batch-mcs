@@ -40,7 +40,7 @@ eureka:
       context-path: ${server.servlet.context-path:}
 feign:
   hystrix:
-    enabled: true
+    enabled: false
   # client:
   #   config:
   #     default:

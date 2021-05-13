@@ -34,7 +34,7 @@ org:
     dataSource:
       myDS:
         driverClassName: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-        url: jdbc:log4jdbc:oracle:thin:@168.78.201.162:21152:XE
+        url: jdbc:log4jdbc:oracle:thin:@localhost:21152:XE
         maxConnections: 10
         user: etax
         password: 1qaz2wsx#edc
@@ -68,17 +68,17 @@ spring:
       # it can be set to any label, branch or commit of the configuration source Git repository
   datasource:
     driverClassName: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    url: jdbc:log4jdbc:oracle:thin:@168.78.201.162:21152:XE
+    url: jdbc:log4jdbc:oracle:thin:@localhost:21152:XE
     username: etax
     password: 1qaz2wsx#edc
   datasource1:
     driverClassName: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    url: jdbc:log4jdbc:oracle:thin:@168.78.201.162:21152:XE
+    url: jdbc:log4jdbc:oracle:thin:@localhost:21152:XE
     username: etax
     password: 1qaz2wsx#edc
   datasource2:
     driverClassName: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    url: jdbc:log4jdbc:oracle:thin:@168.78.201.162:21152:XE
+    url: jdbc:log4jdbc:oracle:thin:@localhost:21152:XE
     username: exedi
     password: CHWJ8_9_3123
   quartz:
