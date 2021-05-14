@@ -109,16 +109,32 @@ public class TbTaxBillInfoEncInitial {
         targetVO.setInvoiceePartyId(invoiceePartyId);
         // 한전 종사업장 번호
         targetVO.setInvoiceeTaxRegistId(CommonUtility.getTaxRegistId(CommonUtility.TrimNull(invoiceeTaxRegistId))); //공급받는자 종사업장 번호
-        targetVO.setInvoiceePartyName(CommonUtility.TrimNull(sourceVO.getInvoiceePartyName()));
-        targetVO.setInvoiceeCeoName(CommonUtility.TrimNull(sourceVO.getInvoiceeCeoName()));
+        String invoiceePartyName = CommonUtility.TrimNull(sourceVO.getInvoiceePartyName());
+        if ("".equals(invoiceePartyName)) {
+            invoiceePartyName = "BLANK";
+        }
+        targetVO.setInvoiceePartyName(invoiceePartyName);
+        String invoiceeCeoName = CommonUtility.TrimNull(sourceVO.getInvoiceeCeoName());
+        if ("".equals(invoiceeCeoName)) {
+            invoiceeCeoName = "BLANK";
+        }
+        targetVO.setInvoiceeCeoName(invoiceeCeoName);
         String invoiceeAddr = CommonUtility.TrimNull(CommonUtility.cutStringByte(sourceVO.getInvoiceeAddr(), 148));
         if ("".equals(invoiceeAddr)) {
             invoiceeAddr = "BLANK";
         }
         targetVO.setInvoiceeAddr(invoiceeAddr);
         //-------------------
-        targetVO.setInvoiceeType(CommonUtility.TrimNull(CommonUtility.cutStringByte(sourceVO.getInvoiceeType(), 38)));
-        targetVO.setInvoiceeClass(CommonUtility.TrimNull(CommonUtility.cutStringByte(sourceVO.getInvoiceeClass(), 38))); //공급받는자 종목
+        String invoiceeType = CommonUtility.TrimNull(CommonUtility.cutStringByte(sourceVO.getInvoiceeType(), 38));
+        if ("".equals(invoiceeType)) {
+            invoiceeType = "BLANK";
+        }
+        targetVO.setInvoiceeType(invoiceeType);
+        String invoiceeClass = CommonUtility.TrimNull(CommonUtility.cutStringByte(sourceVO.getInvoiceeClass(), 38));
+        if ("".equals(invoiceeClass)) {
+            invoiceeClass = "BLANK";
+        }
+        targetVO.setInvoiceeClass(invoiceeClass); //공급받는자 종목
         //######### 한전 정보 셋팅 ##############
         targetVO.setInvoiceeContactDepart1(""); //담당부서 (넘겨주는 값 없음)
         targetVO.setInvoiceeContactName1("BATCH");
