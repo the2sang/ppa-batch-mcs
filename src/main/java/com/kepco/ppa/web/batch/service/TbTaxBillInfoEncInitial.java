@@ -60,25 +60,53 @@ public class TbTaxBillInfoEncInitial {
         targetVO.setImportPeriodStartDay("");
         targetVO.setImportPeriodEndDay("");
         targetVO.setImportItemQuantity(0);
-        targetVO.setInvoicerPartyId(CommonUtility.TrimNull(sourceVO.getInvoicerPartyId()).replaceAll("-", "")); //공급자 사업자번호
+        String invoicerPartyId = CommonUtility.TrimNull(sourceVO.getInvoicerPartyId()).replaceAll("-", "");
+        if ("".equals(invoicerPartyId)) {
+            invoicerPartyId = "BLANK";
+        }
+        targetVO.setInvoicerPartyId(invoicerPartyId); //공급자 사업자번호
         targetVO.setInvoicerTaxRegistId(CommonUtility.TrimNull(sourceVO.getInvoicerTaxRegistId())); //공급자 종사업자 번호
         String invoicerPartyName = CommonUtility.TrimNull(sourceVO.getInvoicerPartyName());
         if ("".equals(invoicerPartyName)) {
             invoicerPartyName = "BLANK";
         }
         targetVO.setInvoicerPartyName(invoicerPartyName); //공급자 상호
-        targetVO.setInvoicerCeoName(CommonUtility.TrimNull(sourceVO.getInvoicerCeoName())); //공급자 대표자
-        targetVO.setInvoicerAddr(CommonUtility.cutStringByte(sourceVO.getInvoicerAddr(), 148)); //공급자  소재지
-        targetVO.setInvoicerType(CommonUtility.TrimNull(CommonUtility.cutStringByte(sourceVO.getInvoicerType(), 38))); //공급자 업테
-        targetVO.setInvoicerClass(CommonUtility.TrimNull(CommonUtility.cutStringByte(sourceVO.getInvoicerClass(), 38)));
+        String invoicerCeoName = CommonUtility.TrimNull(sourceVO.getInvoicerCeoName());
+        if ("".equals(invoicerCeoName)) {
+            invoicerCeoName = "BLANK";
+        }
+        targetVO.setInvoicerCeoName(invoicerCeoName); //공급자 대표자
+        String invoicerAddr = CommonUtility.TrimNull(CommonUtility.cutStringByte(sourceVO.getInvoicerAddr(), 148));
+        if ("".equals(invoicerAddr)) {
+            invoicerAddr = "BLANK";
+        }
+        targetVO.setInvoicerAddr(invoicerAddr); //공급자  소재지
+        String invoicerType = CommonUtility.TrimNull(CommonUtility.cutStringByte(sourceVO.getInvoicerType(), 38));
+        if ("".equals(invoicerType)) {
+            invoicerType = "BLANK";
+        }
+        targetVO.setInvoicerType(invoicerType); //공급자 업테
+        String invoicerClass = CommonUtility.TrimNull(CommonUtility.cutStringByte(sourceVO.getInvoicerClass(), 38));
+        if ("".equals(invoicerClass)) {
+            invoicerClass = "BLANK";
+        }
+        targetVO.setInvoicerClass(invoicerClass);
         targetVO.setInvoicerContactDepart(""); //담당부서( 넘겨주는값 없음  )
-        targetVO.setInvoicerContactName(CommonUtility.TrimNull(sourceVO.getInvoicerContactName()));
+        String invoicerContactName = CommonUtility.TrimNull(sourceVO.getInvoicerContactName());
+        if ("".equals(invoicerContactName)) {
+            invoicerContactName = "BLANK";
+        }
+        targetVO.setInvoicerContactName(invoicerContactName);
         if (!CommonUtility.isEmpty(sourceVO.getInvoicerContactPhone())) {
             targetVO.setInvoicerContactPhone(CommonUtility.TrimNull(sourceVO.getInvoicerContactPhone().replaceAll("-", "")));
         }
         targetVO.setInvoicerContactEmail(sourceVO.getInvoicerContactEmail()); //공급자 이메일
         targetVO.setInvoiceeBusinessTypeCode("01"); // 20121126 매입증빙 공급자 구분 . --> 공급받는자 구분값 01 고정.
-        targetVO.setInvoiceePartyId(CommonUtility.TrimNull(sourceVO.getInvoiceePartyId()).replaceAll("-", ""));
+        String invoiceePartyId = CommonUtility.TrimNull(sourceVO.getInvoiceePartyId()).replaceAll("-", "");
+        if ("".equals(invoiceePartyId)) {
+            invoiceePartyId = "BLANK";
+        }
+        targetVO.setInvoiceePartyId(invoiceePartyId);
         // 한전 종사업장 번호
         targetVO.setInvoiceeTaxRegistId(CommonUtility.getTaxRegistId(CommonUtility.TrimNull(invoiceeTaxRegistId))); //공급받는자 종사업장 번호
         targetVO.setInvoiceePartyName(CommonUtility.TrimNull(sourceVO.getInvoiceePartyName()));

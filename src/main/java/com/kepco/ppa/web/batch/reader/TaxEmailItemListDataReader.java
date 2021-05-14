@@ -17,7 +17,7 @@ public class TaxEmailItemListDataReader {
     @Setter
     private DataSource dataSource;
 
-    public final int READER_FETCH_SIZE = 20;
+    public final int READER_FETCH_SIZE = 10;
 
     public JdbcPagingItemReader<TaxEmailItemListVO> getPagingReader() {
         JdbcPagingItemReader<TaxEmailItemListVO> reader = new JdbcPagingItemReader<>();
