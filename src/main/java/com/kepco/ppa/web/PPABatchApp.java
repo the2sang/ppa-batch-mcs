@@ -34,7 +34,7 @@ public class PPABatchApp {
     }
 
     /**
-     * Initializes ppa-batch-mcs.
+     * Initializes ppa-batch-mcs. TESTss
      * <p>
      * Spring profiles can be configured with a program argument --spring.profiles.active=your-active-profile
      * <p>
