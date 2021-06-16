@@ -7,6 +7,7 @@ import com.kepco.ppa.web.batch.listener.JobLoggerListener;
 import com.kepco.ppa.web.batch.listener.LoggingStepStartStopListener;
 import com.kepco.ppa.web.batch.reader.TaxEmailBillInfoDataReader;
 import com.kepco.ppa.web.batch.reader.TaxEmailBillInfoEncCheckReader;
+import com.kepco.ppa.web.batch.reader.TaxEmailBillInfoMailStatusCode99Reader;
 import com.kepco.ppa.web.batch.reader.TaxEmailItemListDataReader;
 import com.kepco.ppa.web.batch.service.TbTaxBillInfoEncInitial;
 import com.kepco.ppa.web.batch.writer.*;
@@ -128,6 +129,26 @@ public class JobConfiguration {
         );
 
         TaxEmailBillInfoEncCheckReader dataReader = new TaxEmailBillInfoEncCheckReader(jobParameter.getBatchIds());
+        dataReader.setDataSource(this.etaxDataSource);
+
+        return dataReader.getPagingReader();
+    }
+
+    @Bean
+    @StepScope
+    public JdbcPagingItemReader<TaxEmailBillInfoVO> pagingTaxEmailBillInfoMailStatusCodeCheckItemReader() {
+        //log.info(">>>>>>>>>>> time={}, batchIds={}", jobParameter.getTime(), jobParameter.getBatchIds());
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("time", jobParameter.getTime()); // (4)
+        params.put("batchIds", jobParameter.getBatchIds());
+        log.info(
+            ">>>>>>>>>>> Step0 Enc Table Mail Status Code Check time={}, batchIds={}",
+            jobParameter.getTime(),
+            jobParameter.getBatchIds()
+        );
+
+        TaxEmailBillInfoMailStatusCode99Reader dataReader = new TaxEmailBillInfoMailStatusCode99Reader(jobParameter.getBatchIds());
         dataReader.setDataSource(this.etaxDataSource);
 
         return dataReader.getPagingReader();
@@ -298,6 +319,16 @@ public class JobConfiguration {
             .build();
     }
 
+    // 배치처리 스텝1 99에서 스탭2 01(배치 완료)로 변경되지 않고 남은 데이터에 대해 mail_status_code를 55로 변경하여 배치 제외
+    @Bean
+    JdbcBatchItemWriter<TaxEmailBillInfoVO> taxEmailBillInfoErrorCodeChangeUpdate() {
+        return new JdbcBatchItemWriterBuilder<TaxEmailBillInfoVO>()
+            .dataSource(etaxDataSource)
+            .beanMapped()
+            .sql("UPDATE TAX_EMAIL_BILL_INFO SET MAIL_STATUS_CODE = '55' WHERE MAIL_STATUS_CODE = :mailStatusCode")
+            .build();
+    }
+
     // TB_TAX_BILL_INFO_ENC 테이블에 ISERO_ISSUE_ID와 TAX_EMAIL_BILL_INFO ISSUE_ID 값이 같은 경우 배치처리에서 제외
     // 기존 수기로 등록하거나 봇에서 등록 처리한 건이 이메일로 다시 와서 중복 처리하는 경우를 방지함.
     @Bean
@@ -327,6 +358,16 @@ public class JobConfiguration {
                 "INSERT INTO PPA_BATCH_STATUS (ISSUE_ID, CREATED, STATUS) VALUES ( :issueId, TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI'),  '1' )"
             )
             .build();
+    }
+
+    //PPA 배치 시작 전 이전 배치처리에서 99 에러 코드를 55로 변경 처리 및 기존 중복처리 코드 변경 88
+    @Bean
+    public CompositeItemWriter<TaxEmailBillInfoVO> compositeCheckWriter() {
+        CompositeItemWriter<TaxEmailBillInfoVO> compositeItemWriter = new CompositeItemWriter<>();
+
+        compositeItemWriter.setDelegates(Arrays.asList(taxEmailBillInfoErrorCodeChangeUpdate(), taxEmailBillInfoEncCheckUpdate()));
+
+        return compositeItemWriter;
     }
 
     //PPA 배치처리를 위한 6개 테이블 Insert 및 Update
@@ -379,12 +420,26 @@ public class JobConfiguration {
 
     @JobScope
     @Bean
+    public Step stepErrorCheck() {
+        log.info("STEP-ErrorCheck 시작...");
+
+        return stepBuilderFactory
+            .get("stepErrorCheck")
+            .<TaxEmailBillInfoVO, TaxEmailBillInfoVO>chunk(50)
+            .reader(pagingTaxEmailBillInfoMailStatusCodeCheckItemReader())
+            .writer(taxEmailBillInfoErrorCodeChangeUpdate())
+            .listener(new LoggingStepStartStopListener())
+            .build();
+    }
+
+    @JobScope
+    @Bean
     public Step step0() {
         log.info("STEP-0 시작...");
 
         return stepBuilderFactory
             .get("step0")
-            .<TaxEmailBillInfoVO, TaxEmailBillInfoVO>chunk(10)
+            .<TaxEmailBillInfoVO, TaxEmailBillInfoVO>chunk(50)
             .reader(pagingTaxEmailBillInfoEncCheckItemReader())
             .writer(taxEmailBillInfoEncCheckUpdate())
             .listener(new LoggingStepStartStopListener())
@@ -398,7 +453,7 @@ public class JobConfiguration {
 
         return stepBuilderFactory
             .get("step1")
-            .<TaxEmailBillInfoVO, TbTaxBillInfoEncVO>chunk(10)
+            .<TaxEmailBillInfoVO, TbTaxBillInfoEncVO>chunk(50)
             .reader(pagingTaxEmailBillInfoItemReader())
             .processor(tbTaxBillInfoEncItemProcessor(null))
             .writer(compositeItemWriter())
@@ -412,7 +467,7 @@ public class JobConfiguration {
         log.info("STEP-2 시작...");
         return stepBuilderFactory
             .get("step2")
-            .<TaxEmailItemListVO, TaxEmailItemListVO>chunk(10)
+            .<TaxEmailItemListVO, TaxEmailItemListVO>chunk(50)
             .reader(pagingTaxEmailItemListItemReader())
             .writer(compositeStep2ItemWriter())
             .listener(new LoggingStepStartStopListener())
@@ -455,7 +510,8 @@ public class JobConfiguration {
             .preventRestart()
             .incrementer(new RunIdIncrementer())
             .listener(JsrJobListenerFactoryBean.getListener(new JobLoggerListener()))
-            .start(step0())
+            .start(stepErrorCheck())
+            .next(step0())
             .next(step1())
             .next(step2())
             .build();
