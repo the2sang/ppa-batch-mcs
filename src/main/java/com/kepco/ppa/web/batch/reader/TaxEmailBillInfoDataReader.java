@@ -19,7 +19,7 @@ public class TaxEmailBillInfoDataReader {
     @Setter
     private DataSource dataSource;
 
-    public final int READER_FETCH_SIZE = 50;
+    public final int READER_FETCH_SIZE = 200;
 
     @Setter
     @Getter
