@@ -421,11 +421,11 @@ public class JobConfiguration {
     @JobScope
     @Bean
     public Step stepErrorCheck() {
-        log.info("STEP-ErrorCheck 시작...");
+        log.info("STEP-ErrorCheck 시작...에러코드 변경 (99 - > 55)");
 
         return stepBuilderFactory
             .get("stepErrorCheck")
-            .<TaxEmailBillInfoVO, TaxEmailBillInfoVO>chunk(50)
+            .<TaxEmailBillInfoVO, TaxEmailBillInfoVO>chunk(20)
             .reader(pagingTaxEmailBillInfoMailStatusCodeCheckItemReader())
             .writer(taxEmailBillInfoErrorCodeChangeUpdate())
             .listener(new LoggingStepStartStopListener())
@@ -435,11 +435,11 @@ public class JobConfiguration {
     @JobScope
     @Bean
     public Step step0() {
-        log.info("STEP-0 시작...");
+        log.info("STEP-0 시작...중복체크(null -> 88");
 
         return stepBuilderFactory
             .get("step0")
-            .<TaxEmailBillInfoVO, TaxEmailBillInfoVO>chunk(50)
+            .<TaxEmailBillInfoVO, TaxEmailBillInfoVO>chunk(20)
             .reader(pagingTaxEmailBillInfoEncCheckItemReader())
             .writer(taxEmailBillInfoEncCheckUpdate())
             .listener(new LoggingStepStartStopListener())
@@ -449,11 +449,11 @@ public class JobConfiguration {
     @JobScope
     @Bean
     public Step step1() {
-        log.info("STEP-1 시작...");
+        log.info("STEP-1 시작...(6개 테이블 생성 작업)");
 
         return stepBuilderFactory
             .get("step1")
-            .<TaxEmailBillInfoVO, TbTaxBillInfoEncVO>chunk(50)
+            .<TaxEmailBillInfoVO, TbTaxBillInfoEncVO>chunk(20)
             .reader(pagingTaxEmailBillInfoItemReader())
             .processor(tbTaxBillInfoEncItemProcessor(null))
             .writer(compositeItemWriter())
@@ -464,10 +464,10 @@ public class JobConfiguration {
     @JobScope
     @Bean
     public Step step2() {
-        log.info("STEP-2 시작...");
+        log.info("STEP-2 시작...(3개 테이블 생성 작업");
         return stepBuilderFactory
             .get("step2")
-            .<TaxEmailItemListVO, TaxEmailItemListVO>chunk(50)
+            .<TaxEmailItemListVO, TaxEmailItemListVO>chunk(20)
             .reader(pagingTaxEmailItemListItemReader())
             .writer(compositeStep2ItemWriter())
             .listener(new LoggingStepStartStopListener())
