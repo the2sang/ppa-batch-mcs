@@ -435,7 +435,7 @@ public class JobConfiguration {
     @JobScope
     @Bean
     public Step step0() {
-        log.info("STEP-0 시작...중복체크(null -> 88");
+        log.info("STEP-0 시작...중복체크(null -> 88)");
 
         return stepBuilderFactory
             .get("step0")
@@ -464,7 +464,7 @@ public class JobConfiguration {
     @JobScope
     @Bean
     public Step step2() {
-        log.info("STEP-2 시작...(3개 테이블 생성 작업");
+        log.info("STEP-2 시작...(3개 테이블 생성 작업)");
         return stepBuilderFactory
             .get("step2")
             .<TaxEmailItemListVO, TaxEmailItemListVO>chunk(20)
