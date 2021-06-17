@@ -21,7 +21,7 @@ public class TaxEmailBillInfoEncCheckReader {
     @Setter
     private DataSource dataSource;
 
-    public final int READER_FETCH_SIZE = 200;
+    public final int READER_FETCH_SIZE = 100;
 
     @Setter
     @Getter
