@@ -3,6 +3,7 @@ package com.kepco.ppa.web.config;
 import com.kepco.ppa.web.batch.domain.TaxEmailBillInfoVO;
 import com.kepco.ppa.web.batch.domain.TaxEmailItemListVO;
 import com.kepco.ppa.web.batch.domain.TbTaxBillInfoEncVO;
+import com.kepco.ppa.web.batch.listener.ErrorCheckLoggingStepStartStopListener;
 import com.kepco.ppa.web.batch.listener.JobLoggerListener;
 import com.kepco.ppa.web.batch.listener.LoggingStepStartStopListener;
 import com.kepco.ppa.web.batch.reader.TaxEmailBillInfoDataReader;
@@ -79,6 +80,9 @@ public class JobConfiguration {
 
     @Value("${DB_ENC}")
     private String dbencConfig;
+
+    @Value("${katalkAlamReceiver}")
+    private String alarmReceiver;
 
     @Autowired
     private CreateBachIdsJobParameter jobParameter;
@@ -428,7 +432,7 @@ public class JobConfiguration {
             .<TaxEmailBillInfoVO, TaxEmailBillInfoVO>chunk(20)
             .reader(pagingTaxEmailBillInfoMailStatusCodeCheckItemReader())
             .writer(taxEmailBillInfoErrorCodeChangeUpdate())
-            .listener(new LoggingStepStartStopListener())
+            .listener(new ErrorCheckLoggingStepStartStopListener(this.alarmReceiver))
             .build();
     }
 
