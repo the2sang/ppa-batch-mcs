@@ -12,7 +12,8 @@
 # Full reference is available at:
 # http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 # ===================================================================
-cronExpression: '0 0/1 * * * ? *'
+katalkAlamReceiver: '01073994958,01097383538,01066295803'
+cronExpression: '0 0/5 * * * ? *'
 DB_ENC: '0'
 quartz_run: 'dev'
 logging:

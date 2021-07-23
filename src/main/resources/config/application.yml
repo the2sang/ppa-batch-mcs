@@ -220,7 +220,8 @@ jhipster:
     license: unlicensed
     license-url:
   security:
-    Content-Security-Policy: "default-src ‘self’ 168.78.201.165 localhost 127.20.10.2; script-src 'self' localhost 168.78.201.165 127.20.10.2; connect-src 'self' 168.78.201.165 localhost 127.20.10.2"
+    content-security-policy: "default-src 'self'; frame-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://storage.googleapis.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:"
+    #Content-Security-Policy: "default-src ‘self’ 168.78.201.165 localhost 127.20.10.2; script-src 'self' localhost 168.78.201.165 127.20.10.2; connect-src 'self' 168.78.201.165 localhost 127.20.10.2"
     #Content-Security-Policy-Report-Only: "default-src 'self';"
     #Content-Security-Policy: default-src 'none'; script-src https://cdn.mybank.net; style-src https://cdn.mybank.net; img-src https://cdn.mybank.net; connect-src https://api.mybank.com; child-src 'self'
     #content-security-policy: "default-src 'self'; http://localhost:9060 'self'; frame-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://storage.googleapis.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:"
