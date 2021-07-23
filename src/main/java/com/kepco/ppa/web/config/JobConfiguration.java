@@ -16,6 +16,7 @@ import com.kepco.ppa.web.batch.writer.preparedStatmementSetter.*;
 import com.kepco.ppa.web.common.YAMLConfig;
 import com.kepco.ppa.web.web.rest.CreateBachIdsJobParameter;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -474,6 +475,9 @@ public class JobConfiguration {
             .<TaxEmailItemListVO, TaxEmailItemListVO>chunk(20)
             .reader(pagingTaxEmailItemListItemReader())
             .writer(compositeStep2ItemWriter())
+            .faultTolerant()
+            .skipLimit(5)
+            .skip(SQLException.class)
             .listener(new LoggingStepStartStopListener())
             .build();
     }
