@@ -27,7 +27,8 @@ public class TbTaxBillInfoEncService {
 
         sb.append("\n SELECT  IO_CODE, ISSUE_DAY, BIZ_MANAGE_ID, REL_SYSTEM_ID, JOB_GUB_CODE, UUID");
         sb.append("\n   FROM TB_TAX_BILL_INFO_ENC");
-        sb.append("\n  WHERE ESERO_ISSUE_ID = '" + issueId + "'");
+        //sb.append("\n  WHERE ESERO_ISSUE_ID = '" + issueId + "'");
+        sb.append("\n  WHERE ESERO_ISSUE_ID = '" + issueId + "'" + " AND REGIST_ID = 'ppauser' ");
 
         return (ArrayList<TbTaxBillInfoEncVO>) jdbcTemplate.query(
             sb.toString(),
