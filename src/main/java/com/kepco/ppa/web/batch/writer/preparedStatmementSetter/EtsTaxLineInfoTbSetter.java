@@ -3,6 +3,7 @@ package com.kepco.ppa.web.batch.writer.preparedStatmementSetter;
 import com.kepco.ppa.web.batch.domain.TaxEmailItemListVO;
 import com.kepco.ppa.web.batch.domain.TbTaxBillInfoEncVO;
 import com.kepco.ppa.web.batch.service.TbTaxBillInfoEncService;
+import com.kepco.ppa.web.common.CommonUtility;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ public class EtsTaxLineInfoTbSetter implements ItemPreparedStatementSetter<TaxEm
             pstmt.setString(idx++, "");
             pstmt.setString(idx++, vo.getItemName());
             pstmt.setString(idx++, vo.getItemInfo());
-            pstmt.setString(idx++, vo.getItemDesc());
+            pstmt.setString(idx++, CommonUtility.cutStringByte(vo.getItemDesc(), 70));
             pstmt.setLong(idx++, vo.getUnitQuantity());
             pstmt.setString(idx++, "");
             pstmt.setLong(idx++, vo.getUnitAmount());
@@ -62,7 +63,7 @@ public class EtsTaxLineInfoTbSetter implements ItemPreparedStatementSetter<TaxEm
             pstmt.setString(idx++, "");
             pstmt.setString(idx++, vo.getItemName());
             pstmt.setString(idx++, vo.getItemInfo());
-            pstmt.setString(idx++, vo.getItemDesc());
+            pstmt.setString(idx++, CommonUtility.cutStringByte(vo.getItemDesc(), 70));
             pstmt.setLong(idx++, vo.getUnitQuantity());
             pstmt.setString(idx++, "");
             pstmt.setLong(idx++, vo.getUnitAmount());
