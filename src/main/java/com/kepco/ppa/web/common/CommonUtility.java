@@ -954,6 +954,11 @@ public class CommonUtility {
         String cutStr = "";
 
         try {
+            //null 체크 추가
+            if (str == null) {
+                return cutStr;
+            }
+
             byte[] rawBytes = str.getBytes("EUC-KR");
             int rawLength = rawBytes.length;
 
