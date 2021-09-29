@@ -43,6 +43,7 @@ public class IfTaxBillItemListTableWriter {
         sb.append("\n    AND T1.ISSUE_DAY = ?");
         sb.append("\n    AND T1.BIZ_MANAGE_ID = ?");
         sb.append("\n    AND T1.SEQ_NO = ?");
+        sb.append("\n    AND T2.REGIST_ID = 'ppauser'");
 
         return sb.toString();
     }
