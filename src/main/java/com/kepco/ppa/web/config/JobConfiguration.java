@@ -476,7 +476,7 @@ public class JobConfiguration {
             .reader(pagingTaxEmailItemListItemReader())
             .writer(compositeStep2ItemWriter())
             .faultTolerant()
-            .skipLimit(5)
+            .skipLimit(3)
             .skip(SQLException.class)
             .listener(new LoggingStepStartStopListener())
             .build();
