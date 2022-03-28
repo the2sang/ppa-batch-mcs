@@ -29,6 +29,7 @@ public class IfTaxBillResultInfoTableWriter {
         sb.append("\n  WHERE IO_CODE = ?");
         sb.append("\n    AND ISSUE_DAY = ?");
         sb.append("\n    AND BIZ_MANAGE_ID = ?");
+        sb.append("\n    AND REGIST_ID = 'ppauser'");
 
         return sb.toString();
     }
