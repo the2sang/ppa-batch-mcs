@@ -15,7 +15,8 @@ plugins {
     id "jacoco"
     id "org.springframework.boot"
     id "com.google.cloud.tools.jib"
-    id "com.gorylenko.gradle-git-properties"
+    //id "com.gorylenko.gradle-git-properties"
+//    id "com.gorylenko.gradle-git-properties", version: "2.2.4"
     id "org.openapi.generator"
     id "org.liquibase.gradle"
     id "org.sonarqube"
@@ -164,10 +165,10 @@ liquibase {
     runList = project.ext.runList
 }
 
-gitProperties {
-    failOnNoGitDirectory = false
-    keys = ["git.branch", "git.commit.id.abbrev", "git.commit.id.describe"]
-}
+//runListgitProperties {
+//    failOnNoGitDirectory = false
+//    keys = ["git.branch", "git.commit.id.abbrev", "git.commit.id.describe"]
+//}
 
 checkstyle {
     toolVersion "${checkstyleVersion}"
@@ -292,6 +293,9 @@ dependencies {
 
     testCompileOnly 'org.projectlombok:lombok:1.18.20'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
+
+    // log4j 보안 이슈로 인한 패치 : 2022년 03월 29일 적용 2.17.1 -> 2.17.2 업데이트
+    implementation(platform("org.apache.logging.log4j:log4j-bom:2.17.2"))
 }
 
 if (project.hasProperty("gae")) {
