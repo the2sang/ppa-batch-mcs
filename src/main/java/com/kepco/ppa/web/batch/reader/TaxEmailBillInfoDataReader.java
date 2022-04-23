@@ -60,7 +60,7 @@ public class TaxEmailBillInfoDataReader {
         sb.append("   AND MAIL_STATUS_CODE IS NULL"); //메일진행상태(null:DEFAULT,'01':작성중및회계처리중,'02'회계처리완료,'98':공급받는자반려, '88' : 중복처리
         sb.append("   AND (INVOICEE_CONTACT_EMAIL1 LIKE '%ppa%' OR INVOICEE_CONTACT_EMAIL2 LIKE '%ppa%') "); // 공급자 이메일이 ppa로 시작
         sb.append("   AND (INVOICEE_TAX_REGIST_ID != null OR INVOICEE_TAX_REGIST_ID != '0') "); // 종사업장코드가 null이 아니거나 0이 아닌것
-        sb.append("  AND ISSUE_DT >= TO_CHAR(sysdate - 31, 'YYYYMMDDhh24miss')"); //61일 전 데이터까지 조회
+        sb.append("  AND ISSUE_DT >= TO_CHAR(sysdate - 31, 'YYYYMMDDhh24miss')"); //31일 전 데이터까지 조회
 
         // 배치 ID별로 수집하여 실행
         if (batchIds != null) {
