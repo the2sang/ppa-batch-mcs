@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import oracle.jdbc.OracleDatabaseException;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.*;
@@ -46,6 +47,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.dao.DuplicateKeyException;
 
 /**
  * Created By K.H.C (Hanjun KDN)
@@ -476,8 +478,10 @@ public class JobConfiguration {
             .reader(pagingTaxEmailItemListItemReader())
             .writer(compositeStep2ItemWriter())
             .faultTolerant()
-            .skipLimit(3)
-            .skip(SQLException.class)
+            .skipLimit(10)
+            .skip(OracleDatabaseException.class)
+            .skip(SQLIntegrityConstraintViolationException.class)
+            .skip(DuplicateKeyException.class)
             .listener(new LoggingStepStartStopListener())
             .build();
     }
